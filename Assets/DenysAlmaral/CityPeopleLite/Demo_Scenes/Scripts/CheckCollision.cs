@@ -1,53 +1,70 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class CheckCollision : MonoBehaviour
 {
-    private Outline outline; // Tham chiếu đến script "Outline" của đối tượng
+    private Outline outline;
 
+    [SerializeField]
+    private Button useBtn;
+    [SerializeField]
+    private GameObject musicPanel;
     void Start()
     {
-        // Lấy tham chiếu đến script "Outline" của đối tượng
-        outline = GetComponent<Outline>();
-        // Tắt script "Outline" khi bắt đầu game
-        outline.enabled = false;
     }
 
-    void OnTriggerEnter(Collider other)
+    void OnTVClick()
     {
-        // Kiểm tra nếu nhân vật tiếp xúc với đối tượng
-        if (other.CompareTag("Player"))
-        {
-            // Bật script "Outline" khi nhân vật tiếp cận
-            outline.enabled = true;
-        }
+        musicPanel.SetActive(true);
     }
+
+    void OnDinnerTableClick()
+    {
+        HealthController.OnEatAction.Invoke();
+    }
+
+    void OnChairClick()
+    {
+        
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log(collision.gameObject.name);
-        if (collision.gameObject.CompareTag("Player"))
+        outline = collision.gameObject.GetComponent<Outline>();
+        if (outline != null)
+        outline.enabled = true;
+
+        switch (collision.gameObject.tag)
         {
-            // Bật script "Outline" khi nhân vật tiếp cận
-            outline.enabled = true;
+            case "TV":
+                useBtn.gameObject.SetActive(true);
+                useBtn.onClick.RemoveAllListeners();
+                useBtn.onClick.AddListener(OnTVClick);
+                break;
+            case "Chair":
+                useBtn.gameObject.SetActive(true);
+                useBtn.onClick.RemoveAllListeners();
+                useBtn.onClick.AddListener(OnChairClick);
+                break;
+            case "Dinner Table":
+                useBtn.gameObject.SetActive(true);
+                useBtn.onClick.RemoveAllListeners();
+                useBtn.onClick.AddListener(OnDinnerTableClick);
+                break;
         }
+        
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        Debug.Log(collision.gameObject.name);
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            // Bật script "Outline" khi nhân vật tiếp cận
+        outline = collision.gameObject.GetComponent<Outline>();
+        if (outline != null)
             outline.enabled = false;
-        }
+
+        
+        useBtn.gameObject.SetActive(false);
+        
     }
 
-    void OnTriggerExit(Collider other)
-    {
-        // Kiểm tra nếu nhân vật rời xa đối tượng
-        if (other.CompareTag("Player"))
-        {
-            // Tắt script "Outline" khi nhân vật rời xa
-            outline.enabled = false;
-        }
-    }
 }
